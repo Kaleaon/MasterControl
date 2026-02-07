@@ -155,14 +155,7 @@ class MCPServerService : Service() {
                     val tool = tools.find { it.name == toolName }
                     
                     val result = if (tool != null) {
-                        ToolCallResult(
-                            content = listOf(
-                                TextContent(
-                                    type = "text",
-                                    text = "Tool '${tool.name}' executed successfully!"
-                                )
-                            )
-                        )
+                        executeTool(toolName, mcpRequest.params?.arguments ?: emptyMap())
                     } else {
                         ToolCallResult(
                             content = listOf(
@@ -185,6 +178,91 @@ class MCPServerService : Service() {
             }
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+    
+    private fun executeTool(toolName: String, arguments: Map<String, String>): ToolCallResult {
+        return try {
+            when (toolName) {
+                "get_device_info" -> {
+                    val deviceInfo = buildString {
+                        appendLine("Device: ${Build.DEVICE}")
+                        appendLine("Model: ${Build.MODEL}")
+                        appendLine("Manufacturer: ${Build.MANUFACTURER}")
+                        appendLine("Android Version: ${Build.VERSION.RELEASE}")
+                        appendLine("SDK: ${Build.VERSION.SDK_INT}")
+                        appendLine("Brand: ${Build.BRAND}")
+                        appendLine("Product: ${Build.PRODUCT}")
+                    }
+                    ToolCallResult(
+                        content = listOf(
+                            TextContent(
+                                type = "text",
+                                text = deviceInfo.trim()
+                            )
+                        )
+                    )
+                }
+                
+                "send_notification" -> {
+                    val title = arguments["title"] ?: "Notification"
+                    val message = arguments["message"] ?: ""
+                    
+                    // Send a notification
+                    val notificationManager = getSystemService(NotificationManager::class.java)
+                    val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setContentTitle(title)
+                        .setContentText(message)
+                        .setSmallIcon(android.R.drawable.ic_dialog_info)
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .build()
+                    
+                    notificationManager.notify(System.currentTimeMillis().toInt(), notification)
+                    
+                    ToolCallResult(
+                        content = listOf(
+                            TextContent(
+                                type = "text",
+                                text = "Notification sent: '$title' - '$message'"
+                            )
+                        )
+                    )
+                }
+                
+                "echo" -> {
+                    val message = arguments["message"] ?: ""
+                    ToolCallResult(
+                        content = listOf(
+                            TextContent(
+                                type = "text",
+                                text = "Echo: $message"
+                            )
+                        )
+                    )
+                }
+                
+                else -> {
+                    ToolCallResult(
+                        content = listOf(
+                            TextContent(
+                                type = "text",
+                                text = "Error: Unknown tool '$toolName'"
+                            )
+                        ),
+                        isError = true
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            ToolCallResult(
+                content = listOf(
+                    TextContent(
+                        type = "text",
+                        text = "Error executing tool: ${e.message}"
+                    )
+                ),
+                isError = true
+            )
         }
     }
     

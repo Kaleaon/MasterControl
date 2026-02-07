@@ -9,7 +9,9 @@ import android.os.IBinder
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -88,9 +90,11 @@ class MainActivity : AppCompatActivity() {
     
     private fun startUIUpdates() {
         lifecycleScope.launch {
-            while (true) {
-                updateUI()
-                delay(1000) // Update every second
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                while (true) {
+                    updateUI()
+                    delay(1000) // Update every second
+                }
             }
         }
     }
