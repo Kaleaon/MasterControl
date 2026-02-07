@@ -106,26 +106,7 @@ class MCPServerService : Service() {
     
     private suspend fun handleMCPConnection(session: DefaultWebSocketServerSession) {
         try {
-            // Send initialization message
-            val initMessage = MCPMessage(
-                jsonrpc = "2.0",
-                id = 1,
-                method = "initialize",
-                result = MCPInitResult(
-                    protocolVersion = "1.0",
-                    serverInfo = ServerInfo(
-                        name = "MasterControl",
-                        version = "1.0.0"
-                    ),
-                    capabilities = Capabilities(
-                        tools = ToolsCapability(listChanged = false)
-                    )
-                )
-            )
-            
-            session.send(Frame.Text(json.encodeToString(initMessage)))
-            
-            // Handle incoming messages
+            // Handle incoming messages - wait for client to initiate
             for (frame in session.incoming) {
                 if (frame is Frame.Text) {
                     val receivedText = frame.readText()
@@ -142,8 +123,26 @@ class MCPServerService : Service() {
             val mcpRequest = json.decodeFromString<MCPRequest>(request)
             
             when (mcpRequest.method) {
+                "initialize" -> {
+                    val response = MCPInitResponse(
+                        jsonrpc = "2.0",
+                        id = mcpRequest.id,
+                        result = MCPInitResult(
+                            protocolVersion = "1.0",
+                            serverInfo = ServerInfo(
+                                name = "MasterControl",
+                                version = "1.0.0"
+                            ),
+                            capabilities = Capabilities(
+                                tools = ToolsCapability(listChanged = false)
+                            )
+                        )
+                    )
+                    session.send(Frame.Text(json.encodeToString(response)))
+                }
+                
                 "tools/list" -> {
-                    val response = MCPResponse(
+                    val response = MCPToolsListResponse(
                         jsonrpc = "2.0",
                         id = mcpRequest.id,
                         result = ToolsListResult(tools = tools)
@@ -176,7 +175,7 @@ class MCPServerService : Service() {
                         )
                     }
                     
-                    val response = MCPResponse(
+                    val response = MCPToolCallResponse(
                         jsonrpc = "2.0",
                         id = mcpRequest.id,
                         result = result
@@ -279,11 +278,24 @@ class MCPServerService : Service() {
 
 // MCP Protocol Data Classes
 @Serializable
-data class MCPMessage(
+data class MCPInitResponse(
     val jsonrpc: String,
     val id: Int? = null,
-    val method: String? = null,
-    val result: MCPInitResult? = null
+    val result: MCPInitResult
+)
+
+@Serializable
+data class MCPToolsListResponse(
+    val jsonrpc: String,
+    val id: Int? = null,
+    val result: ToolsListResult
+)
+
+@Serializable
+data class MCPToolCallResponse(
+    val jsonrpc: String,
+    val id: Int? = null,
+    val result: ToolCallResult
 )
 
 @Serializable
@@ -321,13 +333,6 @@ data class MCPRequest(
 data class ToolCallParams(
     val name: String? = null,
     val arguments: Map<String, String>? = null
-)
-
-@Serializable
-data class MCPResponse(
-    val jsonrpc: String,
-    val id: Int? = null,
-    val result: Any? = null
 )
 
 @Serializable
