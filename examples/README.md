@@ -1,6 +1,6 @@
 # MCP Client Examples
 
-This directory contains example client implementations for testing the MasterControl MCP server.
+This directory contains example client implementations for testing the MasterControl MCP server, including examples for multi-server integration.
 
 ## Prerequisites
 
@@ -12,19 +12,21 @@ Before running these examples, make sure:
    adb forward tcp:8080 tcp:8080
    ```
 
-## Python Example
+## Basic Examples
 
-### Setup
+### Python Example (mcp_client_example.py)
+
+#### Setup
 ```bash
 pip install websocket-client
 ```
 
-### Run
+#### Run
 ```bash
 python mcp_client_example.py
 ```
 
-### What it does
+#### What it does
 The Python example demonstrates:
 - Connecting to the MCP server via WebSocket
 - Initializing the MCP connection
@@ -33,28 +35,81 @@ The Python example demonstrates:
 - Calling the `get_device_info` tool
 - Calling the `send_notification` tool
 
-## JavaScript Example
+### JavaScript Example (mcp_client_example.js)
 
-### Setup
+#### Setup
 ```bash
 npm install ws
 ```
 
-### Run
+#### Run
 ```bash
 node mcp_client_example.js
 ```
 
-### What it does
+#### What it does
 The JavaScript example performs the same operations as the Python example:
 - WebSocket connection
 - Protocol initialization
 - Tool listing and execution
 - All three built-in tools (echo, get_device_info, send_notification)
 
+## Multi-Server Examples
+
+### Multi-Server Python Client (multi_server_client.py)
+
+**NEW!** This example demonstrates connecting to both MasterControl Android server AND the Google Docs MCP server simultaneously.
+
+#### Setup
+```bash
+pip install websocket-client
+```
+
+#### Configuration
+Edit `multi_server_client.py` and update:
+```python
+GOOGLE_DOCS_MCP_COMMAND = ["node", "/path/to/google-docs-mcp/build/index.js"]
+```
+
+#### Run
+```bash
+python multi_server_client.py
+```
+
+#### What it does
+- Connects to Android MCP via WebSocket
+- Connects to Google Docs MCP via stdio
+- Lists tools from both servers
+- Demonstrates cross-server workflows
+- Shows how to use device info with Google Docs
+
+See [../GOOGLE_DOCS_INTEGRATION.md](../GOOGLE_DOCS_INTEGRATION.md) for complete integration guide.
+
+### Multi-Server JavaScript Client (multi_server_client.js)
+
+Similar to the Python multi-server example, but in JavaScript/Node.js.
+
+#### Setup
+```bash
+npm install ws
+```
+
+#### Configuration
+Edit `multi_server_client.js` and update:
+```javascript
+const GOOGLE_DOCS_MCP_PATH = '/path/to/google-docs-mcp/build/index.js';
+```
+
+#### Run
+```bash
+node multi_server_client.js
+```
+
 ## Expected Output
 
-Both examples should produce output similar to:
+### Basic Examples
+
+Both basic examples should produce output similar to:
 
 ```
 Connecting to MCP server at ws://localhost:8080/mcp...
@@ -86,6 +141,37 @@ Notification result: Notification sent: 'MCP Test' - 'Notification sent from Pyt
 ✓ Connection closed
 ```
 
+### Multi-Server Examples
+
+Multi-server examples will show tools from both servers:
+
+```
+✓ Connected to Android MCP server
+✓ Starting Google Docs MCP server...
+✓ Google Docs MCP initialized
+
+--- Listing tools from both servers ---
+
+Android Tools (3):
+  - get_device_info
+  - send_notification
+  - echo
+
+Google Docs Tools (25):
+  - read_document
+  - create_document
+  - list_files
+  - create_spreadsheet
+  - append_to_document
+  ... and 20 more
+
+--- Cross-server workflow ---
+Device info retrieved from Android:
+[Device information...]
+
+✓ Multi-server workflow completed!
+```
+
 ## Troubleshooting
 
 ### Connection refused
@@ -102,6 +188,12 @@ Notification result: Notification sent: 'MCP Test' - 'Notification sent from Pyt
 - Verify the tool names match exactly (case-sensitive)
 - Check the tool parameters match the schema
 - Review server logs for error messages
+
+### Google Docs MCP not connecting (multi-server examples)
+- Verify the path to Google Docs MCP server is correct
+- Ensure Node.js is installed and in PATH
+- Check Google Cloud credentials are properly configured
+- Review the [Google Docs MCP setup guide](https://github.com/a-bonus/google-docs-mcp)
 
 ## Creating Your Own Client
 

@@ -24,6 +24,7 @@ An Android application that runs a **Model Context Protocol (MCP) server** direc
 - ✅ **Built-in Tools**: Device info, notifications, echo
 - ✅ **Real-time UI**: Live status and server information
 - ✅ **Production Ready**: Type-safe, secure, well-tested
+- ✅ **Multi-Server Integration**: Works with Google Docs MCP and other servers
 
 ## 🛠️ Available Tools
 
@@ -32,6 +33,13 @@ An Android application that runs a **Model Context Protocol (MCP) server** direc
 | `get_device_info` | Get Android device information | None |
 | `send_notification` | Send a notification | `title`, `message` |
 | `echo` | Echo back a message | `message` |
+
+## 🔗 Integration with Other MCP Servers
+
+MasterControl can work alongside other MCP servers! See [GOOGLE_DOCS_INTEGRATION.md](GOOGLE_DOCS_INTEGRATION.md) for:
+- Using MasterControl with [Google Docs MCP](https://github.com/a-bonus/google-docs-mcp)
+- Multi-server client examples (Python & JavaScript)
+- Cross-server workflow examples
 
 ## 📝 Example Usage
 

@@ -133,6 +133,15 @@ The app requires the following permissions:
 - `FOREGROUND_SERVICE_DATA_SYNC`: For foreground service type
 - `POST_NOTIFICATIONS`: To show service notifications
 
+## Integration with Other MCP Servers
+
+MasterControl can work alongside other MCP servers to create powerful multi-server workflows. For example, you can use it with the [Google Docs MCP server](https://github.com/a-bonus/google-docs-mcp) to enable AI agents to interact with both your Android device and Google Workspace.
+
+**See [GOOGLE_DOCS_INTEGRATION.md](GOOGLE_DOCS_INTEGRATION.md) for:**
+- How to connect to multiple MCP servers simultaneously
+- Example workflows combining Android and Google Docs tools
+- Complete setup instructions and code examples
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
