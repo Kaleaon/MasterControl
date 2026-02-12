@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MasterControl</string>
+    <string name="info_text">This app runs a Model Context Protocol (MCP) server on your Android device. Connect to it using WebSocket at ws://localhost:8080/mcp to interact with the device through MCP tools.</string>
+</resources>
